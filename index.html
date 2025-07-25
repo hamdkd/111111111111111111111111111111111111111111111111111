@@ -1,0 +1,2447 @@
+
+
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e40af">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ثانوية الفجر الأهلية للبنات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+
+    <style>
+  
+
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        
+        * {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .receipt {
+            width: 80mm;
+            padding: 10mm;
+            margin: 0 auto;
+            border: 1px dashed #000;
+        }
+ 
+@media print {
+  /* إخفاء كل شيء */
+  body * {
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* إظهار فقط الوصلات */
+  #receipt-preview,
+  #receipt-preview * {
+    visibility: visible !important;
+    overflow: visible !important;
+    height: auto !important;
+    font-weight: bold !important; /* <-- تم إضافة تغميق الخط */
+  }
+
+  /* ضبط حاوية الوصلات */
+  #receipt-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex !important;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1cm;
+    box-sizing: border-box;
+    gap: 1cm;
+    page-break-before: avoid;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  #receipt-preview > div {
+    width: 49%;
+    border: 2px dashed black;
+    padding: 0.5cm;
+    box-sizing: border-box;
+    font-size: 11px;
+    height: auto;
+  }
+
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <header class="bg-green-900 text-white shadow-lg">
+            <div class="container mx-auto px-5 py-5">
+                <h1 class="text-2xl md:text-3xl font-bold text-center"> ثانوية الفجر الأهلية - للبنات</h1>
+            </div>
+        </header>
+        
+ 
+
+<style>
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient {
+  background: linear-gradient(-45deg, #3b82f6, #a855f7, #ec4899, #22d3ee);
+  background-size: 400% 400%;
+  animation: gradient-x 10s ease infinite;
+}
+</style>
+
+
+<style>
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient {
+  background: linear-gradient(270deg, #3b82f6, #a855f7, #ec4899, #22d3ee);
+  background-size: 400% 400%;
+  animation: gradient-x 10s ease infinite;
+}
+.animate-gradient-dropdown {
+  background: linear-gradient(270deg, #06b6d4, #3b82f6, #8b5cf6, #ec4899);
+  background-size: 600% 600%;
+  animation: gradient-x 8s ease infinite;
+}
+</style>
+
+<nav class="relative text-white shadow-lg animate-gradient">
+  <div class="container mx-auto px-4 py-4 flex justify-start relative">
+    <div class="relative">
+      <button id="dropdown-btn" class="bg-green-700 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-2xl shadow-md focus:outline-none">
+        القائمة الرئيسية
+      </button>
+      <div id="dropdown-menu" class="hidden absolute top-0 right-full mr-4 flex flex-row space-x-0 space-y-0 text-white rounded-lg shadow-lg z-50 animate-gradient-dropdown">
+        <button class="px-4 py-2 whitespace-nowrap hover:bg-white/10 transition-colors duration-300" data-tab="add-student">➕ إضافة طالبة</button>
+        <button class="px-4 py-2 whitespace-nowrap hover:bg-white/10 transition-colors duration-300" data-tab="pay-fees">💰 تسديد الأقساط</button>
+        <button class="px-4 py-2 whitespace-nowrap hover:bg-white/10 transition-colors duration-300" data-tab="statistics">📊 الإحصائيات</button>
+        <button class="px-4 py-2 whitespace-nowrap hover:bg-white/10 transition-colors duration-300" data-tab="fees-data">📚 بيانات الأقساط حسب الصف</button>
+        <button class="px-4 py-2 whitespace-nowrap hover:bg-white/10 transition-colors duration-300" data-tab="payment-reports">📝 تقارير دفع الأقساط</button>
+        <button class="px-4 py-2 whitespace-nowrap hover:bg-white/10 transition-colors duration-300" data-tab="support">🛠️ الدعم</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const dropdownBtn = document.getElementById('dropdown-btn');
+  const dropdownMenu = document.getElementById('dropdown-menu');
+  dropdownBtn.addEventListener('click', () => {
+    dropdownMenu.classList.toggle('hidden');
+  });
+  dropdownMenu.querySelectorAll('button[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      dropdownMenu.classList.add('hidden');
+    });
+  });
+</script>
+
+
+
+        
+        <main class="flex-grow container mx-auto px-4 py-6">
+            <!-- إضافة طالب -->
+            <div id="add-student" class="tab-content active">
+                <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+                    <h2 class="text-xl font-bold mb-6 text-blue-800 border-b pb-2">إضافة طالبة جديدة</h2>
+                    
+                    <form id="student-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">اسم الطالبة</label>
+                                <input type="text" id="student-name" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">البريد الإلكتروني</label>
+                                <input type="email" id="student-email" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">الصف</label>
+                                <select id="student-grade" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="">اختر الصف</option>
+                                    <option value="أول متوسط">أول متوسط</option>
+                                    <option value="ثاني متوسط">ثاني متوسط</option>
+                                    <option value="ثالث متوسط">ثالث متوسط</option>
+                                    <option value="ثالث خارجي">ثالث خارجي</option>
+                                    <option value="رابع علمي">رابع علمي</option>
+                                    <option value="رابع أدبي">رابع أدبي</option>
+                                    <option value="خامس علمي">خامس علمي</option>
+                                    <option value="خامس أدبي">خامس أدبي</option>
+                                    <option value="سادس علمي">سادس علمي</option>
+                                    <option value="سادس أدبي">سادس أدبي</option>
+                                    <option value="سادس خارجي">سادس خارجي</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">الشعبة</label>
+                                <select id="student-section" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="">اختر الشعبة</option>
+                                    <option value="أ">أ</option>
+                                    <option value="ب">ب</option>
+                                    <option value="ج">ج</option>
+                                    <option value="د">د</option>
+                                    <option value="هـ">هـ</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">المبلغ الكلي (دينار)</label>
+                                <input type="number" id="student-total-amount" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">الخصم </label>
+                                <input type="number" id="student-discount" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" min="0" max="500000" value="0">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 mb-2">ملاحظات</label>
+                            <textarea id="student-notes" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="flex justify-between pt-4">
+                            <div class="flex gap-2">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">إضافة الطالبة</button>
+        <button id="edit-student-btn" class="bg-yellow-500 text-white px-6 py-2 rounded-md hover:bg-yellow-600 transition" disabled>تعديل</button>
+    </div>
+                            
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="mt-8 bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto overflow-x-auto">
+                    
+<div class="flex justify-between items-center mb-4">
+  <h3 class="text-lg font-bold text-blue-800 border-b pb-2">قائمة الطالبات</h3>
+  <input type="text" id="student-list-search" placeholder="ابحث عن طالبة..." class="border px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+</div>
+
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                
+                                <th class="px-4 py-2 text-right">اسم الطالبة</th>
+                                <th class="px-4 py-2 text-right">الصف</th>
+                                <th class="px-4 py-2 text-right">الشعبة</th>
+                                <th class="px-4 py-2 text-right">المبلغ الكلي</th>
+                                <th class="px-4 py-2 text-right">الخصم</th>
+                                <th class="px-4 py-2 text-right">المبلغ بعد الخصم</th>
+                                <th class="px-4 py-2 text-right">المدفوع</th>
+                                <th class="px-4 py-2 text-right">المتبقي</th>
+                                <th class="px-4 py-2 text-right">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table-body" class="divide-y divide-gray-200">
+</tbody>
+<div id="pagination-controls" class="mt-4"></div>
+                            <!-- سيتم إضافة الطلاب هنا -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- تسديد الأقساط -->
+            <div id="pay-fees" class="tab-content">
+                <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+                    <h2 class="text-xl font-bold mb-6 text-blue-800 border-b pb-2">تسديد الأقساط</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-3">البحث عن طالبة</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">اسم الطالبة</label>
+                                <input type="text" id="search-name" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">الصف</label>
+                                <select id="search-grade" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">الكل</option>
+                                    <option value="أول متوسط">أول متوسط</option>
+                                    <option value="ثاني متوسط">ثاني متوسط</option>
+                                    <option value="ثالث متوسط">ثالث متوسط</option>
+                                    <option value="ثالث خارجي">ثالث خارجي</option>
+                                    <option value="رابع علمي">رابع علمي</option>
+                                    <option value="رابع أدبي">رابع أدبي</option>
+                                    <option value="خامس علمي">خامس علمي</option>
+                                    <option value="خامس أدبي">خامس أدبي</option>
+                                    <option value="سادس علمي">سادس علمي</option>
+                                    <option value="سادس أدبي">سادس أدبي</option>
+                                    <option value="سادس خارجي">سادس خارجي</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">الشعبة</label>
+                                <select id="search-section" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">الكل</option>
+                                    <option value="أ">أ</option>
+                                    <option value="ب">ب</option>
+                                    <option value="ج">ج</option>
+                                    <option value="د">د</option>
+                                    <option value="هـ">هـ</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button id="search-btn" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">بحث</button>
+                    </div>
+                    
+                    <div id="search-results" class="mt-6 hidden">
+                        <h3 class="text-lg font-semibold mb-3">نتائج البحث</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-2 text-right">اسم الطالبة</th>
+                                        <th class="px-4 py-2 text-right">الصف</th>
+                                        <th class="px-4 py-2 text-right">الشعبة</th>
+                                        <th class="px-4 py-2 text-right">المبلغ بعد الخصم</th>
+                                        <th class="px-4 py-2 text-right">المدفوع</th>
+                                        <th class="px-4 py-2 text-right">المتبقي</th>
+                                        <th class="px-4 py-2 text-right">إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="search-results-body" class="divide-y divide-gray-200">
+                                    <!-- سيتم إضافة نتائج البحث هنا -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div id="payment-form" class="mt-8 hidden">
+                        <h3 class="text-lg font-semibold mb-3">تسديد قسط</h3>
+                        <div class="p-4 bg-gray-50 rounded-lg mb-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p><span class="font-semibold">اسم الطالبة:</span> <span id="payment-student-name"></span></p>
+                                    <p><span class="font-semibold">الصف:</span> <span id="payment-student-grade"></span></p>
+                                    <p><span class="font-semibold">الشعبة:</span> <span id="payment-student-section"></span></p>
+                                </div>
+                                <div>
+                                    <p><span class="font-semibold">المبلغ الكلي:</span> <span id="payment-total-amount"></span> دينار</p>
+                                    <p><span class="font-semibold">الخصـم:</span> <span id="payment-student-discount"></span> دينار</p>
+                                    <p><span class="font-semibold">المبلغ الكلي بعد الخصم:</span> <span id="payment-total-after-discount"></span> دينار</p>
+                                    <p><span class="font-semibold">المبلغ المدفوع:</span> <span id="payment-paid-amount"></span> دينار</p>
+                                    <p><span class="font-semibold">المبلغ المتبقي:</span> <span id="payment-remaining-amount"></span> دينار</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold mb-3">إضافة دفعة جديدة</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-gray-700 mb-2">المبلغ (دينار)</label>
+                                        <input type="number" id="payment-amount" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-gray-700 mb-2">رقم الوصل</label>
+                                        <input type="text" id="payment-receipt-number" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-gray-700 mb-2">تاريخ الدفع</label>
+                                        <input type="date" id="payment-date" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    </div>
+                                    
+                                    
+<div>
+    <label class="block text-gray-700 mb-2">رقم الدفعة</label>
+    <select id="payment-installment-number" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        <option value="">اختر الدفعة</option>
+        <option value="1">الدفعة الاولى</option><option value="2">الدفعة الثانية</option><option value="3">الدفعة الثالثة</option><option value="4">الدفعة الرابعة</option><option value="5">الدفعة الخامسة</option><option value="6">الدفعة السادسة</option><option value="7">الدفعة السابعة</option><option value="8">الدفعة الثامنة</option><option value="9">الدفعة التاسعة</option><option value="10">الدفعة العاشرة</option><option value="11">الدفعة الحادية عشر</option><option value="12">الدفعة الثانية عشر</option><option value="13">الدفعة الثالثة عشر</option><option value="14">الدفعة الرابعة عشر</option><option value="15">الدفعة الخامسة عشر</option>
+    </select>
+</div>
+
+                                    <div>
+                                        <button id="add-payment-btn" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition">إضافة الدفعة</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-semibold mb-3">سجل الدفعات</h4>
+                                <div class="overflow-y-auto max-h-64 border rounded-md">
+                                   <table class="min-w-full divide-y divide-gray-200">
+  <thead class="bg-gray-50">
+    <tr>
+      <th class="px-4 py-2 text-right">التاريخ</th>
+      <th class="px-4 py-2 text-right">المبلغ</th>
+      <th class="px-4 py-2 text-right">رقم الدفعة</th>
+      <th class="px-4 py-2 text-right">رقم الوصل</th>
+      <th class="px-4 py-2 text-right">الإجراءات</th>
+    </tr>
+  </thead>
+  <tbody id="payment-history" class="divide-y divide-gray-200">
+    <!-- سيتم إضافة سجل الدفعات هنا -->
+  </tbody>
+</table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    <div class="mt-6 border-t pt-4">
+    <h4 class="font-semibold mb-3">طباعة وإرسال الوصل</h4>
+<!-- حاوية الوصلين بصف أفقي -->
+<div id="receipt-preview" class="flex flex-row justify-between gap-2 print:gap-2 px-2 py-2">
+
+
+  <!-- الوصل الأول -->
+  <div class="w-1/2 border print:border print:border-dashed print:border-black p-6 text-sm">
+
+    <!-- الرأس -->
+    <div class="flex justify-between items-center mb-4 border-b pb-2">
+      <div class="w-1/3 text-right">
+        <h3 class="text-lg font-bold">ثانوية الفجر الأهلية للبنات</h3>
+      </div>
+      <div class="w-1/3 text-center">
+        <img src="logoo.jpg" alt="" class="w-18 h-18 mx-auto">
+      </div>
+      <div class="w-1/3 text-left">
+        <p><strong>رقم الوصل:</strong> <span id="receipt-number"></span></p>
+        <p><strong>رقم الدفعة:</strong> <span id="receipt-installment"></span></p>
+        <p><strong>التاريخ:</strong> <span id="receipt-date"></span></p>
+      </div>
+    </div>
+
+    <!-- عنوان الوصل -->
+    <h2 class="text-center text-base font-bold mb-4">
+      <span class="inline-block pb-1 border-b-2 border-black">وصل قبض</span>
+    </h2>
+
+<!-- جدول: البيانات الأساسية -->
+<table class="w-full mb-4 border border-black text-center table-fixed">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="border border-black p-2 font-bold">اسم الطالبة</th>
+      <th class="border border-black p-2 font-bold">الصف</th>
+      <th class="border border-black p-2 font-bold">الشعبة</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="border border-black p-2" id="receipt-student-name"></td>
+      <td class="border border-black p-2" id="receipt-student-grade"></td>
+      <td class="border border-black p-2" id="receipt-student-section"></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- جدول: تفاصيل المبلغ والخصم -->
+<table class="w-full mb-4 border border-black text-center table-fixed">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="border border-black p-2 font-bold">المبلغ الكلي</th>
+      <th class="border border-black p-2 font-bold">الخصم</th>
+      <th class="border border-black p-2 font-bold">المبلغ بعد الخصم</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="border border-black p-2"><span id="receipt-total"></span> دينار</td>
+      <td class="border border-black p-2"><span id="receipt-student-discount"></span> دينار</td>
+      <td class="border border-black p-2"><span id="receipt-total-after-discount"></span> دينار</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- جدول: المبلغ المدفوع -->
+<table class="w-full mb-4 border border-black text-center table-fixed">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="border border-black p-2 font-bold">المبلغ المدفوع</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="border border-black p-2"><span id="receipt-amount"></span> دينار</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- جدول: ملخص الحساب -->
+<table class="w-full mb-4 border border-black text-center table-fixed">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="border border-black p-2 font-bold">إجمالي المدفوع</th>
+      <th class="border border-black p-2 font-bold">إجمالي المتبقي</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="border border-black p-2"><span id="receipt-total-paid"></span> دينار</td>
+      <td class="border border-black p-2"><span id="receipt-remaining"></span> دينار</td>
+    </tr>
+  </tbody>
+</table>
+
+
+    <!-- التذييل -->
+    <div class="text-center text-sm border-t pt-2">
+      <p>شارع مطعم ربيع الشام - مقابل مكتبة أستاذ منصور</p>
+      <p class="mt-2">نتمنى لكم التوفيق والنجاح الدائم</p>
+      <p class="mt-2">07757444357</p>
+    </div>
+  </div>
+<!-- الوصل الثاني -->
+<div class="w-1/2 border print:border print:border-dashed print:border-black p-6 text-sm">
+
+  <!-- الرأس -->
+  <div class="flex justify-between items-center mb-4 border-b pb-2">
+    <div class="w-1/3 text-right">
+      <h3 class="text-lg font-bold">ثانوية الفجر الأهلية للبنات</h3>
+    </div>
+    <div class="w-1/3 text-center">
+      <img src="logoo.jpg" alt="" class="w-18 h-18 mx-auto">
+    </div>
+    <div class="w-1/3 text-left">
+      <p><strong>رقم الوصل:</strong> <span id="receipt-number-copy"></span></p>
+        <p><strong>رقم الدفعة:</strong> <span id="receipt-installment-copy"></span></p>
+      <p><strong>التاريخ:</strong> <span id="receipt-date-copy"></span></p>
+    </div>
+  </div>
+
+  <!-- عنوان الوصل -->
+  <h2 class="text-center text-base font-bold mb-4">
+    <span class="inline-block pb-1 border-b-2 border-black">وصل قبض</span>
+  </h2>
+
+  <!-- جدول: البيانات الأساسية -->
+  <table class="w-full mb-4 border border-black text-center table-fixed">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border border-black p-2 font-bold">اسم الطالبة</th>
+        <th class="border border-black p-2 font-bold">الصف</th>
+        <th class="border border-black p-2 font-bold">الشعبة</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="border border-black p-2" id="receipt-student-name-copy"></td>
+        <td class="border border-black p-2" id="receipt-student-grade-copy"></td>
+        <td class="border border-black p-2" id="receipt-student-section-copy"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- جدول: تفاصيل المبلغ والخصم -->
+  <table class="w-full mb-4 border border-black text-center table-fixed">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border border-black p-2 font-bold">المبلغ الكلي</th>
+        <th class="border border-black p-2 font-bold">الخصم</th>
+        <th class="border border-black p-2 font-bold">المبلغ بعد الخصم</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="border border-black p-2"><span id="receipt-total-copy"></span> دينار</td>
+        <td class="border border-black p-2"><span id="receipt-student-discount-copy"></span> دينار</td>
+        <td class="border border-black p-2"><span id="receipt-total-after-discount-copy"></span> دينار</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- جدول: المبلغ المدفوع -->
+  <table class="w-full mb-4 border border-black text-center table-fixed">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border border-black p-2 font-bold">المبلغ المدفوع</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="border border-black p-2"><span id="receipt-amount-copy"></span> دينار</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- جدول: ملخص الحساب -->
+  <table class="w-full mb-4 border border-black text-center table-fixed">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border border-black p-2 font-bold">إجمالي المدفوع</th>
+        <th class="border border-black p-2 font-bold">إجمالي المتبقي</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="border border-black p-2"><span id="receipt-total-paid-copy"></span> دينار</td>
+        <td class="border border-black p-2"><span id="receipt-remaining-copy"></span> دينار</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- التذييل -->
+  <div class="text-center text-sm border-t pt-2">
+    <p>شارع مطعم ربيع الشام - مقابل مكتبة أستاذ منصور</p>
+    <p class="mt-2">نتمنى لكم التوفيق والنجاح الدائم</p>
+    <p class="mt-2">07757444357</p>
+  </div>
+</div>
+</div>
+
+
+                            <div class="flex flex-wrap gap-2">
+                                <button id="print-receipt-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                                    <i class="fas fa-print mr-1"></i> طباعة الوصل
+                                </button>
+                                <button id="email-receipt-btn" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition">
+                                    <i class="fas fa-envelope mr-1"></i> إرسال الوصل بالبريد
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            <!-- الإحصائيات -->
+            <div id="statistics" class="tab-content">
+                <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+                    <h2 class="text-xl font-bold mb-6 text-blue-800 border-b pb-2">الإحصائيات</h2>
+                     <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+        <label class="block text-gray-700 mb-2">الصف</label>
+        <select id="filter-grade" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">الكل</option>
+            <option value="أول متوسط">أول متوسط</option>
+            <option value="ثاني متوسط">ثاني متوسط</option>
+            <option value="ثالث متوسط">ثالث متوسط</option>
+            <option value="ثالث خارجي">ثالث خارجي</option>
+            <option value="رابع علمي">رابع علمي</option>
+            <option value="رابع أدبي">رابع أدبي</option>
+            <option value="خامس علمي">خامس علمي</option>
+            <option value="خامس أدبي">خامس أدبي</option>
+            <option value="سادس علمي">سادس علمي</option>
+            <option value="سادس أدبي">سادس أدبي</option>
+            <option value="سادس خارجي">سادس خارجي</option>
+        </select>
+    </div>
+    <div>
+        <label class="block text-gray-700 mb-2">الشعبة</label>
+        <select id="filter-section" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">الكل</option>
+            <option value="أ">أ</option>
+            <option value="ب">ب</option>
+            <option value="ج">ج</option>
+            <option value="د">د</option>
+            <option value="هـ">هـ</option>
+        </select>
+    </div>
+    <div class="flex items-end">
+        <button onclick="updateStatistics()" class="w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">تحديث الإحصائيات</button>
+    </div>
+</div>
+
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-2">عدد الطالبات</h3>
+                            <p class="text-3xl font-bold" id="total-students">0</p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h3 class="text-lg font-semibold text-green-800 mb-2">إجمالي المبالغ</h3>
+                            <p class="text-3xl font-bold" id="total-fees">0 دينار</p>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-2">إجمالي المدفوع</h3>
+                            <p class="text-3xl font-bold" id="total-paid">0 دينار</p>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h3 class="text-lg font-semibold text-yellow-800 mb-2">إجمالي المتبقي</h3>
+                            <p class="text-3xl font-bold" id="total-remaining">0 دينار</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">نسبة التحصيل</h3>
+                            <div class="aspect-square">
+                                <canvas id="collection-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">توزيع الطالبات حسب الصف</h3>
+                            <div class="aspect-square">
+                                <canvas id="grades-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">توزيع الطالبات حسب الشعبة</h3>
+                        <div class="h-64">
+                            <canvas id="sections-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- الدعم -->
+            <div id="support" class="tab-content">
+                <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+                    <h2 class="text-xl font-bold mb-6 text-blue-800 border-b pb-2">الدعم والنسخ الاحتياطي</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">النسخ الاحتياطي</h3>
+                            <p class="mb-4 text-gray-600">قم بإنشاء نسخة احتياطية من بيانات النظام للحفاظ عليها.</p>
+                            <button id="backup-btn" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition mb-2 w-full">إنشاء نسخة احتياطية</button>
+                            <p class="text-sm text-gray-500 mb-6">سيتم تنزيل ملف النسخة الاحتياطية على جهازك.</p>
+                            
+                            <h3 class="text-lg font-semibold mb-4">استعادة النسخة الاحتياطية</h3>
+                            <p class="mb-4 text-gray-600">قم باستعادة بيانات النظام من نسخة احتياطية سابقة.</p>
+                            <div class="mb-4">
+                                <input type="file" id="restore-file" class="hidden" accept=".json">
+                                <label for="restore-file" class="block w-full bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition text-center cursor-pointer">اختيار ملف النسخة الاحتياطية</label>
+                                <p id="selected-file-name" class="mt-2 text-sm text-gray-500">لم يتم اختيار ملف</p>
+                            </div>
+                            <button id="restore-btn" class="bg-yellow-600 text-white px-6 py-2 rounded-md hover:bg-yellow-700 transition w-full" disabled>استعادة النسخة الاحتياطية</button>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">تصدير البيانات</h3>
+                            <p class="mb-4 text-gray-600">قم بتصدير بيانات النظام إلى ملف Excel.</p>
+                            <div class="space-y-3">
+                                <button id="export-students-btn" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition w-full">تصدير بيانات الطالبات</button>
+                                <button id="export-payments-btn" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition w-full">تصدير بيانات الدفعات</button>
+                                <button id="export-all-btn" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition w-full">تصدير جميع البيانات</button>
+                            </div>
+                            
+                            <h3 class="text-lg font-semibold mt-8 mb-4">مسح البيانات</h3>
+                            <p class="mb-4 text-gray-600">احذر! سيؤدي هذا الإجراء إلى حذف جميع البيانات من النظام.</p>
+                            <button id="clear-data-btn" class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition w-full">مسح جميع البيانات</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+<!-- بيانات الأقساط -->
+<div id="fees-data" class="tab-content">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-6xl mx-auto">
+        <h2 class="text-xl font-bold mb-6 text-blue-800 border-b pb-2">بيانات الأقساط </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+                <label class="block text-gray-700 mb-2">الصف</label>
+                <select id="fees-grade-filter" class="w-full border rounded-md px-3 py-2">
+                    <option value="">الكل</option>
+                    <option value="أول متوسط">أول متوسط</option>
+                    <option value="ثاني متوسط">ثاني متوسط</option>
+                    <option value="ثالث متوسط">ثالث متوسط</option>
+                    <option value="رابع علمي">رابع علمي</option>
+                    <option value="رابع أدبي">رابع أدبي</option>
+                    <option value="خامس علمي">خامس علمي</option>
+                    <option value="خامس أدبي">خامس أدبي</option>
+                    <option value="سادس علمي">سادس علمي</option>
+                    <option value="سادس أدبي">سادس أدبي</option>
+                    <option value="ثالث خارجي">ثالث خارجي</option>
+                    <option value="سادس خارجي">سادس خارجي</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-2">الشعبة</label>
+                <select id="fees-section-filter" class="w-full border rounded-md px-3 py-2">
+                    <option value="">الكل</option>
+                    <option value="أ">أ</option>
+                    <option value="ب">ب</option>
+                    <option value="ج">ج</option>
+                    <option value="د">د</option>
+                    <option value="هـ">هـ</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button onclick="filterFeesData()" class="w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">تصفية</button>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead>
+                    <tr class="bg-gray-100 text-right">
+                        <th class="px-4 py-2 text-right">#</th>
+                        <th class="px-4 py-2">اسم الطالبة</th>
+                        <th class="px-4 py-2">الصف</th>
+                        <th class="px-4 py-2">الشعبة</th>
+                        <th class="px-4 py-2">المبلغ بعد الخصم</th>
+                        <th class="px-4 py-2">المدفوع</th>
+                        <th class="px-4 py-2">المتبقي</th>
+                        <th class="px-4 py-2">تاريخ آخر مبلغ مدفوع</th>
+                    </tr>
+                </thead>
+                <tbody id="fees-data-body" class="divide-y divide-gray-100">
+                    <!-- سيتم ملء البيانات ديناميكياً -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- تقارير دفع الأقساط -->
+<div id="payment-reports" class="tab-content">
+  <div class="bg-white rounded-lg shadow-md p-6 max-w-6xl mx-auto">
+    <h2 class="text-xl font-bold mb-6 text-blue-800 border-b pb-2">تقارير دفع الأقساط</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div>
+        <label class="block text-gray-700 mb-2">الصف</label>
+        <select id="report-grade" class="w-full border rounded-md px-3 py-2">
+          <option value="">الكل</option>
+          <option value="أول متوسط">أول متوسط</option>
+          <option value="ثاني متوسط">ثاني متوسط</option>
+          <option value="ثالث متوسط">ثالث متوسط</option>
+          <option value="رابع علمي">رابع علمي</option>
+          <option value="رابع أدبي">رابع أدبي</option>
+          <option value="خامس علمي">خامس علمي</option>
+          <option value="خامس أدبي">خامس أدبي</option>
+          <option value="سادس علمي">سادس علمي</option>
+          <option value="سادس أدبي">سادس أدبي</option>
+          <option value="ثالث خارجي">ثالث خارجي</option>
+          <option value="سادس خارجي">سادس خارجي</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-gray-700 mb-2">الشعبة</label>
+        <select id="report-section" class="w-full border rounded-md px-3 py-2">
+          <option value="">الكل</option>
+          <option value="أ">أ</option>
+          <option value="ب">ب</option>
+          <option value="ج">ج</option>
+          <option value="د">د</option>
+          <option value="هـ">هـ</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-gray-700 mb-2">الحالة</label>
+        <select id="report-status" class="w-full border rounded-md px-3 py-2">
+          <option value="all">الكل</option>
+          <option value="paid">الدافعين هذا الشهر</option>
+          <option value="unpaid">غير الدافعين هذا الشهر</option>
+        </select>
+      </div>
+      <div class="flex items-end">
+        <button onclick="filterPaymentReports()" class="w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">تصفية</button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto mt-6">
+      <table class="min-w-full divide-y divide-gray-200 text-sm text-right bg-white shadow rounded-lg" id="report-table">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2">اسم الطالبة</th>
+            <th class="px-4 py-2">الصف</th>
+            <th class="px-4 py-2">الشعبة</th>
+            <th class="px-4 py-2">آخر مبلغ مدفوع</th>
+            <th class="px-4 py-2">تاريخها</th>
+            <th class="px-4 py-2">عدد الأيام بدون دفع</th>
+          </tr>
+        </thead>
+        <tbody id="report-table-body" class="divide-y divide-gray-100">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4 text-left">
+      <button onclick="printReportToWord()" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition">
+        طباعة التقرير في ملف Word
+      </button>
+    </div>
+  </div>
+</div>
+
+</main>
+        
+        <footer class="bg-gray-800 text-white py-4 mt-8">
+            <div class="container mx-auto px-4 text-center">
+                <p>نظام أقساط مدرسي - ثانوية الفجر الأهلية  </p>
+                <p>تطوير - Hamza Shakir</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modal for confirmations -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 id="modal-title" class="text-xl font-bold mb-4"></h3>
+            <p id="modal-message" class="mb-6"></p>
+            <div class="flex justify-end space-x-2">
+                <button id="modal-cancel" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition">إلغاء</button>
+                <button id="modal-confirm" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">تأكيد</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+   let students = [];
+let payments = [];
+let currentStudentId = null;
+let selectedStudentForPayment = null;
+let db = null;
+
+// فتح قاعدة البيانات
+let request = indexedDB.open("MyDatabase", 2);
+
+request.onupgradeneeded = function (event) {
+    db = event.target.result;
+
+    if (!db.objectStoreNames.contains("students")) {
+        db.createObjectStore("students", { keyPath: "id" });
+    }
+
+    if (!db.objectStoreNames.contains("payments")) {
+        const paymentStore = db.createObjectStore("payments", { keyPath: "id", autoIncrement: true });
+        paymentStore.createIndex("studentId", "studentId", { unique: false });
+    }
+};
+
+request.onsuccess = function (event) {
+    db = event.target.result;
+    loadStudentsAndUpdateTable();
+    // يمكنك تحميل payments بنفس الطريقة إذا احتجت
+};
+
+request.onerror = function (event) {
+    console.error("Database error:", event.target.errorCode);
+};
+
+
+function addStudentToTable(student) {
+    const tableBody = document.getElementById('students-table-body');
+    const row = document.createElement('tr');
+
+    const paidAmount = student.paidAmount || 0;
+    const remainingAmount = student.totalAfterDiscount - paidAmount;
+
+    row.innerHTML = `
+        <td class="px-4 py-2">${student.name}</td>
+        <td class="px-4 py-2">${student.grade}</td>
+        <td class="px-4 py-2">${student.section}</td>
+        <td class="px-4 py-2">${student.totalAmount.toLocaleString()} دينار</td>
+        <td class="px-4 py-2">${student.discount.toLocaleString()} دينار</td>
+        <td class="px-4 py-2">${student.totalAfterDiscount.toLocaleString()} دينار</td>
+        <td class="px-4 py-2">${paidAmount.toLocaleString()} دينار</td>
+        <td class="px-4 py-2">${remainingAmount.toLocaleString()} دينار</td>
+        
+<td class="px-4 py-2 space-x-1">
+  <button onclick="editStudent('${student.id}')" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 text-sm">تعديل</button>
+  <button onclick="confirmDeleteStudent('${student.id}')" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 text-sm">حذف</button>
+</td>
+
+    `;
+    tableBody.appendChild(row);
+}
+
+
+// تحميل الطلاب وتحديث الجدول
+function loadStudentsAndUpdateTable() {
+    const transaction = db.transaction("students", "readonly");
+    const store = transaction.objectStore("students");
+    const getAllRequest = store.getAll();
+
+    getAllRequest.onsuccess = function () {
+        students = getAllRequest.result || [];
+        updateStudentsTable();
+    };
+}
+
+// Set today's date as default for payment date
+document.getElementById('payment-date').valueAsDate = new Date();
+
+// Tab navigation
+document.querySelectorAll('.tab-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        const tabId = button.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+        button.classList.add('active');
+
+        if (tabId === 'statistics') {
+            updateStatistics();
+        }
+    });
+});
+
+// معالجة إرسال نموذج الطالب
+document.getElementById('student-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('student-name').value;
+    const email = document.getElementById('student-email').value;
+    const grade = document.getElementById('student-grade').value;
+    const section = document.getElementById('student-section').value;
+    const totalAmount = parseFloat(document.getElementById('student-total-amount').value);
+    const discount = parseFloat(document.getElementById('student-discount').value) || 0;
+    const notes = document.getElementById('student-notes').value;
+
+    const totalAfterDiscount = totalAmount - discount;
+
+    const transaction = db.transaction("students", "readwrite");
+    const store = transaction.objectStore("students");
+
+    if (currentStudentId !== null) {
+        // تعديل طالب
+        const existing = students.find(s => s.id === currentStudentId);
+        if (existing) {
+            const updatedStudent = {
+                ...existing,
+                name, email, grade, section,
+                totalAmount, discount,
+                totalAfterDiscount, notes
+            };
+            store.put(updatedStudent);
+            showAlert("تم تعديل بيانات الطالبة بنجاح");
+        }
+    } else {
+        // إضافة طالب جديد
+        const newStudent = {
+            id: Date.now().toString(),
+            name,
+            email,
+            grade,
+            section,
+            totalAmount,
+            discount,
+            totalAfterDiscount,
+            notes,
+            paidAmount: 0
+        };
+        store.add(newStudent);
+students.push(newStudent);
+addStudentToTable(newStudent);
+        showAlert("تمت إضافة الطالبة بنجاح");
+    }
+    
+
+    transaction.oncomplete = function () {
+        resetStudentForm();
+        loadStudentsAndUpdateTable();
+    };
+
+    transaction.onerror = function (event) {
+        console.error("خطأ في تخزين البيانات:", event.target.error);
+    };
+});
+
+function resetStudentForm() {
+    document.getElementById('student-form').reset();
+    currentStudentId = null;
+   
+}
+
+
+let currentPage = 1;
+const studentsPerPage = 50;
+function updateStudentsTable() {
+    const tableBody = document.getElementById('students-table-body');
+    tableBody.innerHTML = '';
+
+    // ترتيب حسب الصف ثم الاسم
+    const sortedStudents = [...students].sort((a, b) => {
+        const gradeComp = a.grade.localeCompare(b.grade, 'ar');
+        return gradeComp !== 0 ? gradeComp : a.name.localeCompare(b.name, 'ar');
+    });
+
+    const startIndex = (currentPage - 1) * studentsPerPage;
+    const paginatedStudents = sortedStudents.slice(startIndex, startIndex + studentsPerPage);
+
+    paginatedStudents.forEach((student, i) => {
+        const paidAmount = student.paidAmount || 0;
+        const remainingAmount = student.totalAfterDiscount - paidAmount;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="px-4 py-2">${student.name}</td>
+            <td class="px-4 py-2">${student.grade}</td>
+            <td class="px-4 py-2">${student.section}</td>
+            <td class="px-4 py-2">${student.totalAmount.toLocaleString()} دينار</td>
+            <td class="px-4 py-2">${student.discount.toLocaleString()} دينار</td>
+            <td class="px-4 py-2">${student.totalAfterDiscount.toLocaleString()} دينار</td>
+            <td class="px-4 py-2">${paidAmount.toLocaleString()} دينار</td>
+            <td class="px-4 py-2">${remainingAmount.toLocaleString()} دينار</td>
+            <td class="px-4 py-2 space-x-1">
+                <button onclick="editStudent('${student.id}')" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 text-sm">تعديل</button>
+                <button onclick="confirmDeleteStudent('${student.id}')" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 text-sm">حذف</button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    renderPaginationControls();
+}
+
+function renderPaginationControls() {
+    const totalPages = Math.ceil(students.length / studentsPerPage);
+    const container = document.getElementById('pagination-controls');
+    container.innerHTML = '';
+
+    if (totalPages <= 1) return;
+
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '⬅ السابق';
+    prevBtn.className = 'px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => {
+        currentPage--;
+        updateStudentsTable();
+    };
+
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'التالي ➡';
+    nextBtn.className = 'px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => {
+        currentPage++;
+        updateStudentsTable();
+    };
+
+    container.appendChild(prevBtn);
+    const pageLabel = document.createElement('span');
+    pageLabel.textContent = ` الصفحة ${currentPage} من ${totalPages} `;
+    pageLabel.className = 'px-2 text-gray-700 font-bold';
+    container.appendChild(pageLabel);
+    container.appendChild(nextBtn);
+}
+        
+      function editStudent(studentId) {
+    const student = students.find(s => s.id == studentId);
+    if (student) {
+        document.getElementById('student-name').value = student.name;
+        document.getElementById('student-email').value = student.email;
+        document.getElementById('student-grade').value = student.grade;
+        document.getElementById('student-section').value = student.section;
+        document.getElementById('student-total-amount').value = student.totalAmount;
+        document.getElementById('student-discount').value = student.discount;
+        document.getElementById('student-notes').value = student.notes || '';
+
+        currentStudentId = studentId;
+        document.getElementById('edit-student-btn').disabled = false;
+        document.getElementById('delete-student-btn').disabled = false;
+
+        document.getElementById('student-form').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+       
+// Search for students
+document.getElementById('search-btn').addEventListener('click', function() {
+    const searchName = document.getElementById('search-name').value.toLowerCase();
+    const searchGrade = document.getElementById('search-grade').value;
+    const searchSection = document.getElementById('search-section').value;
+    
+    let request = indexedDB.open("MyDatabase", 2);
+    
+    request.onsuccess = function(event) {
+        const db = event.target.result;
+        const studentTransaction = db.transaction("students", "readonly");
+        const studentStore = studentTransaction.objectStore("students");
+        
+        // Retrieve all students
+        let studentRequest = studentStore.getAll();
+
+        studentRequest.onsuccess = function() {
+            const students = studentRequest.result;
+            
+            // Filter students based on search criteria
+            const filteredStudents = students.filter(student => {
+                return (
+                    (searchName === '' || student.name.includes(searchName)) &&
+                    (searchGrade === '' || student.grade === searchGrade) &&
+                    (searchSection === '' || student.section === searchSection)
+                );
+            });
+            
+            const resultsBody = document.getElementById('search-results-body');
+            resultsBody.innerHTML = '';
+            
+            if (filteredStudents.length === 0) {
+                document.getElementById('search-results').classList.remove('hidden');
+                resultsBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-4 py-4 text-center">لا توجد نتائج مطابقة للبحث</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredStudents.forEach(student => {
+                const paidAmount = student.paidAmount || 0;
+                const remainingAmount = student.totalAfterDiscount - paidAmount;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-2">${student.name}</td>
+                    <td class="px-4 py-2">${student.grade}</td>
+                    <td class="px-4 py-2">${student.section}</td>
+                    <td class="px-4 py-2">${student.totalAfterDiscount.toLocaleString()} دينار</td>
+                    <td class="px-4 py-2">${paidAmount.toLocaleString()} دينار</td>
+                    <td class="px-4 py-2">${remainingAmount.toLocaleString()} دينار</td>
+                    <td class="px-4 py-2">
+                        <button class="pay-btn bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition text-sm" data-id="${student.id}">تسديد قسط</button>
+                    </td>
+                `;
+                
+                resultsBody.appendChild(row);
+            });
+            
+            document.getElementById('search-results').classList.remove('hidden');
+            
+            // Add event listeners to pay buttons
+            document.querySelectorAll('.pay-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const studentId = button.getAttribute('data-id');
+                    selectStudentForPayment(studentId);
+                });
+            });
+        };
+        
+        studentRequest.onerror = function() {
+            console.error("Error retrieving students from IndexedDB.");
+        };
+    };
+    
+    request.onerror = function(event) {
+        console.error("Database error:", event.target.errorCode);
+    };
+});
+// Select student for payment
+function selectStudentForPayment(studentId) {
+    let request = indexedDB.open("MyDatabase", 2);
+
+    request.onsuccess = function(event) {
+        const db = event.target.result;
+        const studentTransaction = db.transaction("students", "readonly");
+        const studentStore = studentTransaction.objectStore("students");
+
+        // Retrieve the specific student
+        let studentRequest = studentStore.get((studentId));
+
+        studentRequest.onsuccess = function() {
+            const student = studentRequest.result;
+            if (student) {
+                selectedStudentForPayment = student;
+                
+                // Update payment form with student info
+                document.getElementById('payment-student-name').textContent = student.name;
+                document.getElementById('payment-student-grade').textContent = student.grade;
+                document.getElementById('payment-student-section').textContent = student.section;
+                document.getElementById('payment-total-amount').textContent = student.totalAmount.toLocaleString();
+                document.getElementById('payment-student-discount').textContent = student.discount.toLocaleString();
+                document.getElementById('payment-total-after-discount').textContent = student.totalAfterDiscount.toLocaleString();
+                document.getElementById('payment-paid-amount').textContent = (student.paidAmount || 0).toLocaleString();
+                document.getElementById('payment-remaining-amount').textContent = (student.totalAfterDiscount - (student.paidAmount || 0)).toLocaleString();
+                
+                // Show payment form
+                document.getElementById('payment-form').classList.remove('hidden');
+                
+                // Update payment history
+                updatePaymentHistory(studentId);
+                
+                // Scroll to payment form
+                document.getElementById('payment-form').scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+
+        studentRequest.onerror = function() {
+            console.error("Error retrieving student for payment.");
+        };
+    };
+    
+    request.onerror = function(event) {
+        console.error("Database error:", event.target.errorCode);
+    };
+}
+// Update payment history
+function updatePaymentHistory(studentId) {
+    const historyBody = document.getElementById('payment-history');
+    historyBody.innerHTML = '';
+
+    let request = indexedDB.open("MyDatabase", 2);
+
+    request.onsuccess = function(event) {
+        const db = event.target.result;
+        const paymentTransaction = db.transaction("payments", "readonly");
+        const paymentStore = paymentTransaction.objectStore("payments");
+
+        // Retrieve all payments for the student
+        let paymentRequest = paymentStore.index("studentId").getAll((studentId));
+
+        paymentRequest.onsuccess = function() {
+            const studentPayments = paymentRequest.result;
+
+            if (studentPayments.length === 0) {
+                historyBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-4 py-4 text-center">لا توجد دفعات سابقة</td>
+                    </tr>
+                `;
+                return;
+            }
+studentPayments.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(payment => {
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td class="px-4 py-2">${formatDate(payment.date)}</td>
+    <td class="px-4 py-2">${payment.amount.toLocaleString()} دينار</td>
+    <td class="px-4 py-2">${payment.installmentNumber || ""}</td>
+    <td class="px-4 py-2">${payment.receiptNumber}</td>
+    <td class="px-4 py-2">
+      <button class="bg-blue-600 text-white px-2 py-1 rounded text-sm hover:bg-blue-700"
+        onclick='printSpecificReceipt(${JSON.stringify(payment)})'>طباعة</button>
+    </td>
+  `;
+  historyBody.appendChild(row);
+});
+
+        };
+
+        paymentRequest.onerror = function() {
+            console.error("Error retrieving payments from IndexedDB.");
+        };
+    };
+    
+    request.onerror = function(event) {
+        console.error("Database error:", event.target.errorCode);
+    };
+}
+
+      document.getElementById('add-payment-btn').addEventListener('click', function() {
+    if (!selectedStudentForPayment) return;
+
+    const amount = parseFloat(document.getElementById('payment-amount').value);
+    const receiptNumber = document.getElementById('payment-receipt-number').value;
+    const date = document.getElementById('payment-date').value;
+
+    if (!amount || !receiptNumber || !date) {
+        showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
+        return;
+    }
+
+    
+    const installmentNumber = document.getElementById('payment-installment-number').value;
+    if (!installmentNumber) {
+        showAlert('يرجى اختيار رقم الدفعة', 'error');
+        return;
+    }
+
+    const remainingAmount = selectedStudentForPayment.totalAfterDiscount - (selectedStudentForPayment.paidAmount || 0);
+
+    if (amount > remainingAmount) {
+        showAlert('المبلغ المدخل أكبر من المبلغ المتبقي', 'error');
+        return;
+    }
+
+    // Add payment
+    const newPayment = {
+        installmentNumber,
+        id: Date.now().toString(),
+        studentId: selectedStudentForPayment.id,
+        amount,
+        receiptNumber,
+        date
+    };
+
+    savePayment(newPayment); // حفظ الدفع في IndexedDB
+    function savePayment(payment) {
+    const transaction = db.transaction("payments", "readwrite");
+    const store = transaction.objectStore("payments");
+    store.add(payment);
+}
+    // Update student paid amount
+    const studentIndex = students.findIndex(s => s.id === selectedStudentForPayment.id);
+    if (studentIndex !== -1) {
+        students[studentIndex].paidAmount = (students[studentIndex].paidAmount || 0) + amount;
+        selectedStudentForPayment = students[studentIndex];
+    }
+
+    // Save updated student data
+    saveStudent(selectedStudentForPayment); // حفظ الطالب في IndexedDB
+function saveStudent(student) {
+    const transaction = db.transaction("students", "readwrite");
+    const store = transaction.objectStore("students");
+    store.put(student);
+}
+    // Update payment form display
+    document.getElementById('payment-paid-amount').textContent = selectedStudentForPayment.paidAmount.toLocaleString();
+    document.getElementById('payment-remaining-amount').textContent = (selectedStudentForPayment.totalAfterDiscount - selectedStudentForPayment.paidAmount).toLocaleString();
+
+    // Update payment history
+    updatePaymentHistory(selectedStudentForPayment.id);
+
+    // Reset payment form
+    document.getElementById('payment-amount').value = '';
+    document.getElementById('payment-receipt-number').value = '';
+
+    // Show success alert
+    showAlert('تم إضافة الدفعة بنجاح');
+    updateReceiptPreview(newPayment)
+});
+function updateReceiptPreview(payment) {
+  if (!selectedStudentForPayment || !payment) return;
+
+  const student = selectedStudentForPayment;
+  const name = student.name;
+  const grade = student.grade;
+  const section = student.section;
+  const discount = student.discount.toLocaleString();
+  const receiptNumber = payment.receiptNumber;
+  const date = formatDate(payment.date);
+  const amount = payment.amount.toLocaleString();
+  const total = student.totalAmount.toLocaleString();
+  const totalAfterDiscount = student.totalAfterDiscount.toLocaleString();
+  const paid = student.paidAmount.toLocaleString();
+  const remaining = (student.totalAfterDiscount - student.paidAmount).toLocaleString();
+
+  // الوصل الأول
+  document.getElementById('receipt-student-name').textContent = name;
+  document.getElementById('receipt-student-grade').textContent = grade;
+  document.getElementById('receipt-student-section').textContent = section;
+  document.getElementById('receipt-student-discount').textContent = discount;
+  document.getElementById('receipt-number').textContent = receiptNumber;
+  document.getElementById('receipt-date').textContent = date;
+  document.getElementById('receipt-amount').textContent = amount;
+  document.getElementById('receipt-total').textContent = total;
+  document.getElementById('receipt-total-after-discount').textContent = totalAfterDiscount;
+  document.getElementById('receipt-total-paid').textContent = paid;
+  document.getElementById('receipt-remaining').textContent = remaining;
+
+  // الوصل الثاني (نسخة)
+  document.getElementById('receipt-student-name-copy').textContent = name;
+  document.getElementById('receipt-student-grade-copy').textContent = grade;
+  document.getElementById('receipt-student-section-copy').textContent = section;
+  document.getElementById('receipt-student-discount-copy').textContent = discount;
+  document.getElementById('receipt-number-copy').textContent = receiptNumber;
+  document.getElementById('receipt-date-copy').textContent = date;
+  
+  const installment = payment.installmentNumber || "";
+  document.getElementById('receipt-installment').textContent = installment;
+  document.getElementById('receipt-installment-copy').textContent = installment;
+
+  document.getElementById('receipt-amount-copy').textContent = amount;
+  document.getElementById('receipt-total-copy').textContent = total;
+  document.getElementById('receipt-total-after-discount-copy').textContent = totalAfterDiscount;
+  document.getElementById('receipt-total-paid-copy').textContent = paid;
+  document.getElementById('receipt-remaining-copy').textContent = remaining;
+}
+
+
+// Email receipt
+document.getElementById('email-receipt-btn').addEventListener('click', function() {
+    if (!selectedStudentForPayment) return;
+    
+    if (!selectedStudentForPayment.email) {
+        showAlert('لا يوجد بريد إلكتروني مسجل للطالبة', 'error');
+        return;
+    }
+    
+    // In a real application, this would send an email
+    // For this demo, we'll just show a success message
+    showAlert(`تم إرسال الوصل إلى البريد الإلكتروني: ${selectedStudentForPayment.email}`);
+});
+let collectionChart, gradesChart, sectionsChart;
+
+function updateStatistics() {
+    const gradeFilter = document.getElementById('filter-grade').value;
+    const sectionFilter = document.getElementById('filter-section').value;
+
+    const dbRequest = indexedDB.open('MyDatabase', 2);
+
+    dbRequest.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(['students'], 'readonly');
+        const store = transaction.objectStore('students');
+        const studentsRequest = store.getAll();
+
+        studentsRequest.onsuccess = function() {
+            let students = studentsRequest.result;
+
+            if (gradeFilter) students = students.filter(s => s.grade === gradeFilter);
+            if (sectionFilter) students = students.filter(s => s.section === sectionFilter);
+
+            const totalStudents = students.length;
+            const totalFees = students.reduce((sum, student) => sum + student.totalAfterDiscount, 0);
+            const totalPaid = students.reduce((sum, student) => sum + (student.paidAmount || 0), 0);
+            const totalRemaining = totalFees - totalPaid;
+
+            document.getElementById('total-students').textContent = totalStudents;
+            document.getElementById('total-fees').textContent = totalFees.toLocaleString() + ' دينار';
+            document.getElementById('total-paid').textContent = totalPaid.toLocaleString() + ' دينار';
+            document.getElementById('total-remaining').textContent = totalRemaining.toLocaleString() + ' دينار';
+
+            // تحديث مخطط نسبة التحصيل
+            if (collectionChart) collectionChart.destroy();
+            const collectionCtx = document.getElementById('collection-chart').getContext('2d');
+            collectionChart = new Chart(collectionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['المدفوع', 'المتبقي'],
+                    datasets: [{
+                        data: [totalPaid, totalRemaining],
+                        backgroundColor: ['#10B981', '#F59E0B']
+                    }]
+                },
+                options: { plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // تحديث توزيع الصفوف
+            const gradesCounts = {};
+            students.forEach(student => {
+                gradesCounts[student.grade] = (gradesCounts[student.grade] || 0) + 1;
+            });
+
+            if (gradesChart) gradesChart.destroy();
+            const gradesCtx = document.getElementById('grades-chart').getContext('2d');
+            gradesChart = new Chart(gradesCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(gradesCounts),
+                    datasets: [{
+                        data: Object.values(gradesCounts),
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16', '#A855F7']
+                    }]
+                },
+                options: { plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // تحديث توزيع الشعب
+            const sectionsCounts = {};
+            students.forEach(student => {
+                sectionsCounts[student.section] = (sectionsCounts[student.section] || 0) + 1;
+            });
+
+            if (sectionsChart) sectionsChart.destroy();
+            const sectionsCtx = document.getElementById('sections-chart').getContext('2d');
+            sectionsChart = new Chart(sectionsCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(sectionsCounts),
+                    datasets: [{
+                        label: 'عدد الطالبات',
+                        data: Object.values(sectionsCounts),
+                        backgroundColor: '#3B82F6'
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+        };
+    };
+}
+// Backup data
+document.getElementById('backup-btn').addEventListener('click', function() {
+    const dbRequest = indexedDB.open('MyDatabase', 2);
+
+    dbRequest.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(['students', 'payments'], 'readonly');
+        const studentsStore = transaction.objectStore('students');
+        const paymentsStore = transaction.objectStore('payments');
+        
+        const studentsRequest = studentsStore.getAll(); // Get all students
+        const paymentsRequest = paymentsStore.getAll(); // Get all payments
+        
+        studentsRequest.onsuccess = function() {
+            paymentsRequest.onsuccess = function() {
+                const backupData = {
+                    students: studentsRequest.result,
+                    payments: paymentsRequest.result,
+                    timestamp: new Date().toISOString()
+                };
+
+                const dataStr = JSON.stringify(backupData);
+                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                
+                const exportFileName = `school_fees_backup_${formatDateForFile(new Date())}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileName);
+                linkElement.click();
+                
+                showAlert('تم إنشاء النسخة الاحتياطية بنجاح');
+            };
+        };
+
+        studentsRequest.onerror = function() {
+            showAlert('حدث خطأ أثناء جلب بيانات الطالبات', 'error');
+        };
+    };
+
+    dbRequest.onerror = function() {
+        showAlert('فشل في الاتصال بقاعدة البيانات', 'error');
+    };
+});
+
+// Handle restore file selection
+document.getElementById('restore-file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        document.getElementById('selected-file-name').textContent = file.name;
+        document.getElementById('restore-btn').disabled = false;
+    } else {
+        document.getElementById('selected-file-name').textContent = 'لم يتم اختيار ملف';
+        document.getElementById('restore-btn').disabled = true;
+    }
+});
+
+// Restore backup
+document.getElementById('restore-btn').addEventListener('click', function() {
+    const fileInput = document.getElementById('restore-file');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showAlert('يرجى اختيار ملف النسخة الاحتياطية أولاً', 'error');
+        return;
+    }
+
+    showConfirmModal(
+        'استعادة النسخة الاحتياطية',
+        'سيتم استبدال جميع البيانات الحالية بالبيانات من النسخة الاحتياطية. هل أنت متأكد من المتابعة؟',
+        () => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backupData = JSON.parse(e.target.result);
+                    
+                    if (!backupData.students || !backupData.payments) {
+                        throw new Error('تنسيق ملف النسخة الاحتياطية غير صحيح');
+                    }
+
+                    // Open IndexedDB for writing
+                    const dbRequest = indexedDB.open('MyDatabase', 2);
+                    dbRequest.onsuccess = function(event) {
+                        const db = event.target.result;
+                        const transaction = db.transaction(['students', 'payments'], 'readwrite');
+                        const studentsStore = transaction.objectStore('students');
+                        const paymentsStore = transaction.objectStore('payments');
+                        
+                        // Clear current data
+                        studentsStore.clear();
+                        paymentsStore.clear();
+
+                        // Insert new data from backup
+                        backupData.students.forEach(student => studentsStore.add(student));
+                        backupData.payments.forEach(payment => paymentsStore.add(payment));
+
+                        // Commit changes and show alert
+                        transaction.oncomplete = function() {
+                            showAlert('تمت استعادة النسخة الاحتياطية بنجاح');
+                              // ✅ تحديث الواجهة بدون إعادة تحميل:
+                             loadStudentsAndUpdateTable();
+                              updateStatistics();
+                            // Reset file input
+                            fileInput.value = '';
+                            document.getElementById('selected-file-name').textContent = 'لم يتم اختيار ملف';
+                            document.getElementById('restore-btn').disabled = true;
+                        };
+
+                        transaction.onerror = function() {
+                            showAlert('حدث خطأ أثناء استعادة النسخة الاحتياطية', 'error');
+                        };
+                    };
+
+                    dbRequest.onerror = function() {
+                        showAlert('فشل في الاتصال بقاعدة البيانات', 'error');
+                    };
+                } catch (error) {
+                    showAlert('حدث خطأ أثناء استعادة النسخة الاحتياطية: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+    );
+});
+
+// Export students to Excel
+document.getElementById('export-students-btn').addEventListener('click', function() {
+    const dbRequest = indexedDB.open('MyDatabase', 2);
+
+    dbRequest.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(['students'], 'readonly');
+        const studentsStore = transaction.objectStore('students');
+        
+        const studentsRequest = studentsStore.getAll(); // Get all students
+        
+        studentsRequest.onsuccess = function() {
+            if (studentsRequest.result.length === 0) {
+                showAlert('لا توجد بيانات للتصدير', 'error');
+                return;
+            }
+
+            const studentsData = studentsRequest.result.map(student => {
+                const paidAmount = student.paidAmount || 0;
+                const remainingAmount = student.totalAfterDiscount - paidAmount;
+                
+                return {
+                    'اسم الطالبة': student.name,
+                    'البريد الإلكتروني': student.email || '',
+                    'الصف': student.grade,
+                    'الشعبة': student.section,
+                    'المبلغ الكلي': student.totalAmount,
+                    'الخصم ': student.discount,
+                    'المبلغ بعد الخصم': student.totalAfterDiscount,
+                    'المبلغ المدفوع': paidAmount,
+                    'المبلغ المتبقي': remainingAmount,
+                    'ملاحظات': student.notes || ''
+                };
+            });
+            
+            exportToExcel(studentsData, 'students_data');
+            showAlert('تم تصدير بيانات الطالبات بنجاح');
+        };
+
+        studentsRequest.onerror = function() {
+            showAlert('حدث خطأ أثناء جلب بيانات الطالبات من IndexedDB', 'error');
+        };
+    };
+
+    dbRequest.onerror = function() {
+        showAlert('فشل في الاتصال بقاعدة البيانات', 'error');
+    };
+});
+// Export payments to Excel
+document.getElementById('export-payments-btn').addEventListener('click', function() {
+    const dbRequest = indexedDB.open('MyDatabase', 2);
+
+    dbRequest.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(['students', 'payments'], 'readonly');
+        const studentsStore = transaction.objectStore('students');
+        const paymentsStore = transaction.objectStore('payments');
+        
+        const studentsRequest = studentsStore.getAll(); // Get all students
+        const paymentsRequest = paymentsStore.getAll(); // Get all payments
+        
+        studentsRequest.onsuccess = function() {
+            paymentsRequest.onsuccess = function() {
+                const paymentsData = paymentsRequest.result.map(payment => {
+                    const student = studentsRequest.result.find(s => s.id === payment.studentId) || {};
+                    
+                    return {
+                        'اسم الطالبة': student.name || 'غير معروف',
+                        'الصف': student.grade || '',
+                        'الشعبة': student.section || '',
+                        'المبلغ': payment.amount,
+                        'رقم الوصل': payment.receiptNumber,
+                        'تاريخ الدفع': formatDate(payment.date)
+                    };
+                });
+                
+                exportToExcel(paymentsData, 'payments_data');
+                showAlert('تم تصدير بيانات الدفعات بنجاح');
+            };
+        };
+
+        studentsRequest.onerror = function() {
+            showAlert('حدث خطأ أثناء جلب بيانات الطالبات', 'error');
+        };
+
+        paymentsRequest.onerror = function() {
+            showAlert('حدث خطأ أثناء جلب بيانات الدفعات', 'error');
+        };
+    };
+
+    dbRequest.onerror = function() {
+        showAlert('فشل في الاتصال بقاعدة البيانات', 'error');
+    };
+});
+
+// Export all data to Excel
+document.getElementById('export-all-btn').addEventListener('click', function() {
+    const dbRequest = indexedDB.open('MyDatabase', 2);
+
+    dbRequest.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction(['students', 'payments'], 'readonly');
+        const studentsStore = transaction.objectStore('students');
+        const paymentsStore = transaction.objectStore('payments');
+        
+        const studentsRequest = studentsStore.getAll(); // Get all students
+        const paymentsRequest = paymentsStore.getAll(); // Get all payments
+        
+        studentsRequest.onsuccess = function() {
+            paymentsRequest.onsuccess = function() {
+                const wb = XLSX.utils.book_new();
+                
+                // Students sheet
+                if (studentsRequest.result.length > 0) {
+                    const studentsData = studentsRequest.result.map(student => {
+                        const paidAmount = student.paidAmount || 0;
+                        const remainingAmount = student.totalAfterDiscount - paidAmount;
+                        
+                        return {
+                            
+                            'اسم الطالبة': student.name,
+                            'البريد الإلكتروني': student.email || '',
+                            'الصف': student.grade,
+                            'الشعبة': student.section,
+                            'المبلغ الكلي': student.totalAmount,
+                            'الخصم ': student.discount,
+                            'المبلغ بعد الخصم': student.totalAfterDiscount,
+                            'المبلغ المدفوع': paidAmount,
+                            'المبلغ المتبقي': remainingAmount,
+                            'ملاحظات': student.notes || ''
+                        };
+                    });
+                    
+                    const ws = XLSX.utils.json_to_sheet(studentsData);
+                    XLSX.utils.book_append_sheet(wb, ws, 'الطالبات');
+                }
+                
+                // Payments sheet
+                if (paymentsRequest.result.length > 0) {
+                    const paymentsData = paymentsRequest.result.map(payment => {
+                        const student = studentsRequest.result.find(s => s.id === payment.studentId) || {};
+                        const remainingAmount = student.totalAfterDiscount - payment.amount;
+                        
+                        return {
+                            
+                            'اسم الطالبة': student.name || 'غير معروف',
+                            'الصف': student.grade || '',
+                            'الشعبة': student.section || '',
+                            'المبلغ بعد الخصم': student.totalAfterDiscount,
+                            'المبلغ': payment.amount,
+                            'رقم الوصل': payment.receiptNumber,
+                            'المبلغ المتبقي': remainingAmount,
+                            'تاريخ الدفع': formatDate(payment.date)
+                        };
+                    });
+                    
+                    const ws = XLSX.utils.json_to_sheet(paymentsData);
+                    XLSX.utils.book_append_sheet(wb, ws, 'الدفعات');
+                }
+                
+                // Export the workbook
+                XLSX.writeFile(wb, `school_fees_data_${formatDateForFile(new Date())}.xlsx`);
+                showAlert('تم تصدير جميع البيانات بنجاح');
+            };
+        };
+
+        studentsRequest.onerror = function() {
+            showAlert('حدث خطأ أثناء جلب بيانات الطالبات', 'error');
+        };
+
+        paymentsRequest.onerror = function() {
+            showAlert('حدث خطأ أثناء جلب بيانات الدفعات', 'error');
+        };
+    };
+
+    dbRequest.onerror = function() {
+        showAlert('فشل في الاتصال بقاعدة البيانات', 'error');
+    };
+});
+
+// Clear all data
+document.getElementById('clear-data-btn').addEventListener('click', function() {
+    showConfirmModal(
+        'مسح جميع البيانات',
+        'سيتم حذف جميع البيانات من النظام بشكل نهائي. هل أنت متأكد من المتابعة؟',
+        () => {
+            const dbRequest = indexedDB.open('MyDatabase', 2);
+            
+            dbRequest.onsuccess = function(event) {
+                const db = event.target.result;
+                const transaction = db.transaction(['students', 'payments'], 'readwrite');
+                const studentsStore = transaction.objectStore('students');
+                const paymentsStore = transaction.objectStore('payments');
+                
+                studentsStore.clear();
+                paymentsStore.clear();
+
+                transaction.oncomplete = function() {
+                    // تفريغ المتغيرات وتحديث الجدول
+                    students = [];
+                    payments = [];
+                    updateStudentsTable();
+                    showAlert('تم مسح جميع البيانات بنجاح');
+                };
+
+                transaction.onerror = function() {
+                    showAlert('حدث خطأ أثناء مسح البيانات', 'error');
+                };
+            };
+
+            dbRequest.onerror = function() {
+                showAlert('فشل في الاتصال بقاعدة البيانات', 'error');
+            };
+        }
+    );
+});
+// Helper function to format date
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ar-IQ');
+}
+
+// Helper function to format date for filenames
+function formatDateForFile(date) {
+    return date.toISOString().split('T')[0];
+}
+
+// Helper function to export data to Excel
+function exportToExcel(data, fileName) {
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Data');
+    XLSX.writeFile(wb, `${fileName}_${formatDateForFile(new Date())}.xlsx`);
+}
+
+// Show alert message
+function showAlert(message, type = 'success') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-md shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white`;
+    alertDiv.textContent = message;
+
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+        alertDiv.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+        setTimeout(() => {
+            document.body.removeChild(alertDiv);
+        }, 500);
+    }, 3000);
+}
+
+// Show confirmation modal
+function showConfirmModal(title, message, confirmCallback) {
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalConfirm = document.getElementById('modal-confirm');
+    const modalCancel = document.getElementById('modal-cancel');
+
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+
+    modal.classList.remove('hidden');
+
+    modalConfirm.onclick = () => {
+        confirmCallback();
+        modal.classList.add('hidden');
+    };
+
+    modalCancel.onclick = () => {
+        modal.classList.add('hidden');
+    };
+}
+// Initialize the app
+updateStudentsTable();
+
+
+</script>
+
+<script>(function() {
+  function c() {
+    var b = a.contentDocument || a.contentWindow.document;
+    if (b) {
+      var d = b.createElement('script');
+      d.innerHTML = "window.__CF$cv$params={r:'93d44797a53fac2f',t:'MTc0NjgyNjAzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+      b.getElementsByTagName('head')[0].appendChild(d);
+    }
+  }
+  if (document.body) {
+    var a = document.createElement('iframe');
+    a.height = 1;
+    a.width = 1;
+    a.style.position = 'absolute';
+    a.style.top = 0;
+    a.style.left = 0;
+    a.style.border = 'none';
+    a.style.visibility = 'hidden';
+    document.body.appendChild(a);
+    if ('loading' !== document.readyState) c();
+    else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c);
+    else {
+      var e = document.onreadystatechange || function() {};
+      document.onreadystatechange = function(b) {
+        e(b);
+        'loading' !== document.readyState && (document.onreadystatechange = e, c())
+      }
+    }
+  }
+})();
+
+
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+  }
+
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+
+
+</script>
+<script>
+// إعداد قاعدة البيانات للوصل
+const receiptDBName = 'MyDatabase';
+const receiptStoreName = 'receiptNumbers';
+
+function openReceiptDB(callback) {
+  const dbRequest = indexedDB.open(receiptDBName, 2);
+
+  dbRequest.onupgradeneeded = function (event) {
+    const db = event.target.result;
+    if (!db.objectStoreNames.contains(receiptStoreName)) {
+      db.createObjectStore(receiptStoreName, { keyPath: 'id' });
+    }
+  };
+
+  dbRequest.onsuccess = function (event) {
+    callback(event.target.result);
+  };
+
+  dbRequest.onerror = function (event) {
+    console.error("Database error:", event.target.errorCode);
+  };
+}
+
+function getLastReceiptNumber(callback) {
+  openReceiptDB(function (db) {
+    const tx = db.transaction(receiptStoreName, 'readonly');
+    const store = tx.objectStore(receiptStoreName);
+    const req = store.get(1);
+
+    req.onsuccess = function () {
+      const result = req.result;
+      if (result && typeof result.lastReceiptNumber === "number") {
+        callback(result.lastReceiptNumber);
+      } else {
+        setLastReceiptNumber(1, () => {
+          callback(1);
+        });
+      }
+    };
+
+    req.onerror = function () {
+      callback(1);
+    };
+  });
+}
+
+function setLastReceiptNumber(value, onComplete = null) {
+  if (typeof value !== 'number' || isNaN(value) || value <= 0) return;
+  openReceiptDB(function (db) {
+    const tx = db.transaction(receiptStoreName, 'readwrite');
+    const store = tx.objectStore(receiptStoreName);
+    store.put({ id: 1, lastReceiptNumber: value });
+    tx.oncomplete = function () {
+      if (onComplete) onComplete();
+    };
+  });
+}
+
+// عرض الرقم مباشرة في حقل رقم الوصل عند الدخول لصفحة الدفع
+window.addEventListener('DOMContentLoaded', function () {
+  const receiptInput = document.getElementById('payment-receipt-number');
+  if (receiptInput) {
+    getLastReceiptNumber(function (currentNumber) {
+      receiptInput.value = currentNumber;
+    });
+  }
+});
+
+// عند الضغط على زر "إضافة الدفعة"، يتم حفظ الرقم وزيادته
+const addPaymentBtn = document.getElementById('add-payment-btn');
+if (addPaymentBtn) {
+  addPaymentBtn.addEventListener('click', function () {
+    const receiptInput = document.getElementById('payment-receipt-number');
+    const currentValue = parseInt(receiptInput.value);
+    if (!isNaN(currentValue)) {
+      setLastReceiptNumber(currentValue + 1);
+    }
+  });
+}
+
+</script>
+
+<script>
+document.getElementById('print-receipt-btn').addEventListener('click', function () {
+    const receipt = document.getElementById('receipt-preview');
+    if (receipt) {
+        receipt.style.display = 'flex';
+    }
+    setTimeout(() => {
+        window.print();
+    }, 200);
+});
+
+</script>
+
+<script>
+document.getElementById("student-list-search").addEventListener("input", function () {
+    const keyword = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#students-table-body tr");
+    rows.forEach(row => {
+        const name = row.children[0].textContent.toLowerCase();
+        if (name.includes(keyword)) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+});
+
+</script>
+<script>
+function printSpecificReceipt(payment) {
+  const request = indexedDB.open("MyDatabase", 2);
+  request.onsuccess = function (event) {
+    const db = event.target.result;
+    const transaction = db.transaction("students", "readonly");
+    const store = transaction.objectStore("students");
+    const studentRequest = store.get(payment.studentId);
+
+    studentRequest.onsuccess = function () {
+      const student = studentRequest.result;
+      if (!student) return;
+
+      const name = student.name;
+      const grade = student.grade;
+      const section = student.section;
+      const discount = student.discount.toLocaleString();
+      const receiptNumber = payment.receiptNumber;
+      const date = formatDate(payment.date);
+      const amount = payment.amount.toLocaleString();
+      const total = student.totalAmount.toLocaleString();
+      const totalAfterDiscount = student.totalAfterDiscount.toLocaleString();
+      const paid = student.paidAmount.toLocaleString();
+      const remaining = (student.totalAfterDiscount - student.paidAmount).toLocaleString();
+
+      // الوصل الأول
+      document.getElementById('receipt-student-name').textContent = name;
+      document.getElementById('receipt-student-grade').textContent = grade;
+      document.getElementById('receipt-student-section').textContent = section;
+      document.getElementById('receipt-student-discount').textContent = discount;
+      document.getElementById('receipt-number').textContent = receiptNumber;
+      document.getElementById('receipt-date').textContent = date;
+      document.getElementById('receipt-amount').textContent = amount;
+      document.getElementById('receipt-total').textContent = total;
+      document.getElementById('receipt-total-after-discount').textContent = totalAfterDiscount;
+      document.getElementById('receipt-total-paid').textContent = paid;
+      document.getElementById('receipt-remaining').textContent = remaining;
+
+      // الوصل الثاني
+      document.getElementById('receipt-student-name-copy').textContent = name;
+      document.getElementById('receipt-student-grade-copy').textContent = grade;
+      document.getElementById('receipt-student-section-copy').textContent = section;
+      document.getElementById('receipt-student-discount-copy').textContent = discount;
+      document.getElementById('receipt-number-copy').textContent = receiptNumber;
+      document.getElementById('receipt-date-copy').textContent = date;
+  
+  const installment = payment.installmentNumber || "";
+  document.getElementById('receipt-installment').textContent = installment;
+  document.getElementById('receipt-installment-copy').textContent = installment;
+
+      document.getElementById('receipt-amount-copy').textContent = amount;
+      document.getElementById('receipt-total-copy').textContent = total;
+      document.getElementById('receipt-total-after-discount-copy').textContent = totalAfterDiscount;
+      document.getElementById('receipt-total-paid-copy').textContent = paid;
+      document.getElementById('receipt-remaining-copy').textContent = remaining;
+
+      // طباعة بعد تأخير بسيط
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    };
+  };
+}
+</script>
+<script>
+function filterFeesData() {
+    const grade = document.getElementById('fees-grade-filter').value;
+    const section = document.getElementById('fees-section-filter').value;
+
+    let request = indexedDB.open("MyDatabase", 2);
+    request.onsuccess = function(event) {
+        const db = event.target.result;
+        const tx = db.transaction(['students', 'payments'], 'readonly');
+        const studentStore = tx.objectStore('students');
+        const paymentStore = tx.objectStore('payments');
+
+        const getAllStudents = studentStore.getAll();
+        const getAllPayments = paymentStore.getAll();
+
+        getAllStudents.onsuccess = function() {
+            getAllPayments.onsuccess = function() {
+                const students = getAllStudents.result;
+                const payments = getAllPayments.result;
+
+                const filteredStudents = students.filter(s =>
+                    (grade === '' || s.grade === grade) &&
+                    (section === '' || s.section === section)
+                );
+
+                // ✅ الترتيب حسب الصف ثم الاسم
+                filteredStudents.sort((a, b) => {
+                    const gradeComp = a.grade.localeCompare(b.grade, 'ar');
+                    return gradeComp !== 0 ? gradeComp : a.name.localeCompare(b.name, 'ar');
+                });
+
+                const tbody = document.getElementById('fees-data-body');
+                tbody.innerHTML = '';
+
+                filteredStudents.forEach((student, index) => {
+                    const paid = student.paidAmount || 0;
+                    const remaining = student.totalAfterDiscount - paid;
+
+                    const studentPayments = payments.filter(p => p.studentId === student.id);
+                    const lastPaymentDate = studentPayments.length
+                        ? new Date(Math.max(...studentPayments.map(p => new Date(p.date)))).toLocaleDateString()
+                        : '—';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-4 py-2 font-bold">${index + 1}</td>
+                        <td class="px-4 py-2">${student.name}</td>
+                        <td class="px-4 py-2">${student.grade}</td>
+                        <td class="px-4 py-2">${student.section}</td>
+                        <td class="px-4 py-2">${student.totalAfterDiscount.toLocaleString()} دينار</td>
+                        <td class="px-4 py-2">${paid.toLocaleString()} دينار</td>
+                        <td class="px-4 py-2">${remaining.toLocaleString()} دينار</td>
+                        <td class="px-4 py-2">${lastPaymentDate}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            };
+        };
+    };
+}
+</script>
+<script>
+// تفعيل التبويبات وتحميل المحتوى المناسب
+document.querySelectorAll('.tab-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+
+        // إخفاء جميع التبويبات
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // إزالة التفعيل من جميع الأزرار
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // تفعيل التبويبة المختارة
+        button.classList.add('active');
+        const tabContent = document.getElementById(tabId);
+        if (tabContent) {
+            tabContent.classList.add('active');
+        }
+
+        // تحميل البيانات حسب التبويبة المختارة
+        switch (tabId) {
+            case 'add-student':
+                if (typeof loadStudentsAndUpdateTable === 'function') {
+                    loadStudentsAndUpdateTable();
+                }
+                break;
+
+            case 'fees-data':
+                if (typeof filterFeesData === 'function') {
+                    filterFeesData();
+                }
+                break;
+
+            case 'statistics':
+                if (typeof updateStatistics === 'function') {
+                    updateStatistics();
+                }
+                break;
+
+            case 'pay-fees':
+                // لا توجد دالة مباشرة، يمكن تحميل أي شيء عند الحاجة
+                break;
+
+            default:
+                // لا شيء
+                break;
+        }
+    });
+});
+</script>
+<script>
+    // تأكيد حذف الطالب
+    function confirmDeleteStudent(studentId) {
+        if (!confirm("هل أنت متأكد من حذف هذه الطالبة")) return;
+
+        const transaction = db.transaction(["students"], "readwrite");
+        const store = transaction.objectStore("students");
+
+        // تحويل المعرف إلى نص للتأكد من التوافق
+        const request = store.delete(String(studentId));
+
+        request.onsuccess = function () {
+            alert("تم حذف الطالبة بنجاح");
+            loadStudentsAndUpdateTable();
+        };
+
+        request.onerror = function (event) {
+            console.error("خطأ أثناء حذف الطالبة:", event.target.error);
+            alert("فشل في حذف الطالبة");
+        };
+    }
+</script>
+
+ 
+
+
+
+<script>
+function filterPaymentReports() {
+    const grade = document.getElementById('report-grade').value;
+    const section = document.getElementById('report-section').value;
+    const status = document.getElementById('report-status').value;
+
+    const request = indexedDB.open("MyDatabase", 2);
+    request.onsuccess = function (event) {
+        const db = event.target.result;
+
+        const studentTx = db.transaction("students", "readonly");
+        const studentStore = studentTx.objectStore("students");
+        const studentReq = studentStore.getAll();
+
+        const paymentTx = db.transaction("payments", "readonly");
+        const paymentStore = paymentTx.objectStore("payments");
+        const paymentReq = paymentStore.getAll();
+
+        studentReq.onsuccess = function () {
+            paymentReq.onsuccess = function () {
+                const students = studentReq.result;
+                const payments = paymentReq.result;
+
+                const now = new Date();
+                const thisMonth = now.getMonth();
+                const thisYear = now.getFullYear();
+
+                const reportBody = document.getElementById("report-table-body");
+                reportBody.innerHTML = "";
+
+                students.forEach(student => {
+                    if (grade && student.grade !== grade) return;
+                    if (section && student.section !== section) return;
+
+                    const studentPayments = payments.filter(p => p.studentId === student.id);
+                    if (studentPayments.length === 0 && status === "paid") return;
+
+                    const lastPayment = studentPayments.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                    let lastDate = lastPayment ? new Date(lastPayment.date) : null;
+
+                    const diffDays = lastDate ? Math.floor((now - lastDate) / (1000 * 60 * 60 * 24)) : null;
+                    const paidThisMonth = lastDate && lastDate.getMonth() === thisMonth && lastDate.getFullYear() === thisYear;
+
+                    if (status === "paid" && !paidThisMonth) return;
+                    if (status === "unpaid" && paidThisMonth) return;
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td class="px-4 py-2">${student.name}</td>
+                        <td class="px-4 py-2">${student.grade}</td>
+                        <td class="px-4 py-2">${student.section}</td>
+                        <td class="px-4 py-2">${lastPayment ? lastPayment.amount.toLocaleString() + ' دينار' : '-'}</td>
+                        <td class="px-4 py-2">${lastDate ? lastDate.toLocaleDateString() : '-'}</td>
+                        <td class="px-4 py-2">${diffDays !== null ? diffDays : '-'}</td>
+                    `;
+                    reportBody.appendChild(row);
+                });
+            };
+        };
+    };
+}
+
+function printReportToWord() {
+    const table = document.getElementById("report-table").outerHTML;
+    const header = "<h2 style='text-align:right'>تقرير تقسيط الطلاب</h2>";
+    const style = `
+        <style>
+            table { border-collapse: collapse; width: 100%; direction: rtl; font-family: 'Tahoma'; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: right; }
+            th { background-color: #f2f2f2; }
+        </style>
+    `;
+    const html = '<html><head><meta charset="utf-8">' + style + '</head><body>' + header + table + '</body></html>';
+    const blob = new Blob(['﻿', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "تقرير_الطلاب.doc";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+
+</body>
+</html>
